@@ -75,17 +75,32 @@ const FormControl = withStyles(theme => ({
   }
 }))(MuiFormControl);
 
-const arrayToObj = (arr) => {
+interface Itype {
+	name?: number | string,
+	surname?: number | string,
+	email?: number | string,
+	phone?: number | string
+}
+
+const arrayToObj = (arr: Array<prop>) => {
 	const ob = {};
 	arr.map((el) => ob[el] = "");
 
 	return ob;
 };
 
-const getKeyByValue = (obj, value) => Object.keys(obj).find(key => obj[key] === value);
+const getKeyByValue = (obj: {}, value: number) => Object.keys(obj).find(key => obj[key] === value);
 
-export const App = (props) => {
-	const types = [
+interface Iprop {
+	values: Array<string>,
+	selected: any,
+	onPreview: (obj: Itype) => void
+}
+
+type prop = "name" | "surname" | "email" | "phone";
+
+export const App = (props: Iprop) => {
+	const types: Array<prop> = [
 		"name",
 		"surname",
 		"email",
@@ -95,8 +110,6 @@ export const App = (props) => {
   const [ open, setOpen ] = useState(true);
   const [ data, setData ] = useState(arrayToObj(types) || {});
 
-
-
   useEffect(() => {
   	setData({
 		...data,
@@ -104,7 +117,7 @@ export const App = (props) => {
 	});
   }, []);
 
-  const handleChange = (e, index) => {
+  const handleChange = (e, index: number) => {
 	  const type = e.target.value || getKeyByValue(data, index);
 	  let newData = {
 		  ...data,
@@ -119,8 +132,6 @@ export const App = (props) => {
   const capitalizeFirstLetter = (word) => {
 	return word[0].toUpperCase() + word.slice(1);
   };
-
-  console.log(data);
 
   return (
     <div>
