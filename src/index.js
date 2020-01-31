@@ -9,8 +9,9 @@ root && ReactDOM.render(<>
       elements={["Flavio", "Bucci", "+39 484 373 47 38", "flaviobuccirentcompany@gmail.com"]} 
     /> */}
     <App
-      elements={["Flavio1", "Bucci", "+39 484 373 47 381", "flaviobuccirentcompany@gmail.com1"]}
-      prev={{name: 3, email: 2, phone: 0}}
+		values={["Flavio1", "Bucci", "+39 484 373 47 381", "flaviobuccirentcompany@gmail.com1"]}
+		selected={{name: 3, surname: 1, phone: 2, email: 0}}
+		onPreview={obj => console.log(JSON.stringify(obj))}
     />
     {/* <App
       elements={["Flavio1", "Bucci", "+39 484 373 47 381", "flaviobuccirentcompany@gmail.com1"]}

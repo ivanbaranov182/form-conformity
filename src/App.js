@@ -1,6 +1,4 @@
-// @flow
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
@@ -77,55 +75,52 @@ const FormControl = withStyles(theme => ({
   }
 }))(MuiFormControl);
 
-type Props = {
-  elements: string[],
-  prev?: {}  
-}
+const arrayToObj = (arr) => {
+	const ob = {};
+	arr.map((el) => ob[el] = "");
 
-export const App = (props: Props) => {
-  const {elements, prev} = props;
-  const [open, setOpen] = useState(true);
-  const [data, setData] = useState([""]);
+	return ob;
+};
 
-  const propNames = [
-    "name",
-    "surname",
-    "email",
-    "phone"
-  ];
+const getKeyByValue = (obj, value) => Object.keys(obj).find(key => obj[key] === value);
+
+export const App = (props) => {
+	const types = [
+		"name",
+		"surname",
+		"email",
+		"phone"
+	];
+  const { values, selected, onPreview } = props;
+  const [ open, setOpen ] = useState(true);
+  const [ data, setData ] = useState(arrayToObj(types) || {});
+
+
 
   useEffect(() => {
-    if(prev){
-      let mass = [];
-      propNames.map((item) => {
-        prev[item] !== undefined && (mass[prev[item]] = item);
-        return prev[item] ? item : "";
-      });
-      setData(mass);
-    }
+  	setData({
+		...data,
+		...selected
+	});
   }, []);
 
-  const handleChange = (e, prop) => {
-    const valueToAdd = getPropByIndex(+e.target.value);
-    const indexToDelete = getKeyByValue(data, valueToAdd);
-    const newData = [...data];
-    indexToDelete && (newData[indexToDelete] = "");
-    newData[prop] = valueToAdd;
-    
-    setData(newData);
+  const handleChange = (e, index) => {
+	  const type = e.target.value || getKeyByValue(data, index);
+	  let newData = {
+		  ...data,
+		  [type]: e.target.value ? index : ""
+	  };
+	  getKeyByValue(data, index) && (newData[getKeyByValue(data, index)] = "");
+	  setData(newData);
   };
 
   const handleOpen = () => setOpen(!open);
 
-  const handleSend = () => {
-    let res = {};
-    data.map((item, index) => (res[item] = index));
-    console.log(res);
+  const capitalizeFirstLetter = (word) => {
+	return word[0].toUpperCase() + word.slice(1);
   };
 
-  const getPropByIndex = (index) => propNames[index];
-
-  const getKeyByValue = (obj, value) => Object.keys(obj).find(key => obj[key] === value);
+  console.log(data);
 
   return (
     <div>
@@ -148,24 +143,20 @@ export const App = (props: Props) => {
           </Typography>
           <form>
             {
-              elements.map((element, index) => {
-                const val = getKeyByValue(propNames, data[index]);
+              values.map((element, index) => {
                 return (
                   <div key={index} className={styles.formRow}>
                     <TextField 
                       label={`Field ${index+1}`} 
                       variant="outlined" 
-                      value={element} 
-                      size="small" 
-                      InputProps={{
-                        readOnly: true,
-                      }}
+                      value={element}
+                      size="small"
                     />
                     <FormControl variant="outlined" size="small">
-                      <Select onChange={(e) => handleChange(e, index)} value={val ? val : ""}>
+                      <Select onChange={(e) => handleChange(e, index)} value={getKeyByValue(data, index) || ""}>
                         <MenuItem value="">None</MenuItem>
-                        {propNames.map((prop, i) => (
-                          <MenuItem value={i} key={i}>{prop}</MenuItem>
+                        {types.map((prop, i) => (
+                          <MenuItem value={prop} key={i} disabled={!(data[prop] === "")}>{capitalizeFirstLetter(prop)}</MenuItem>
                         ))}
                       </Select>
                     </FormControl>
@@ -176,7 +167,7 @@ export const App = (props: Props) => {
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSend} color="primary" fullWidth={true} variant="outlined">
+          <Button onClick={() => onPreview(data)} color="primary" fullWidth={true} variant="outlined">
             <CachedIcon /> Show Table Preview
           </Button>
         </DialogActions>
