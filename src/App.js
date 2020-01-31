@@ -107,7 +107,7 @@ export const App = (props: Iprop) => {
 		"phone"
 	];
   const { values, selected, onPreview } = props;
-  const [ open, setOpen ] = useState(true);
+  const [ open, setOpen ] = useState(false);
   const [ data, setData ] = useState(arrayToObj(types) || {});
 
   useEffect(() => {
